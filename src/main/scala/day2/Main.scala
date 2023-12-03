@@ -12,6 +12,18 @@ case class Game(id: Int, choices: List[Choice]) {
   def isValidGame: Boolean = {
     this.choices.forall(_.isValidChoice)
   }
+
+  def minimumGamePossible: Choice = {
+    this.choices.foldLeft(Choice(0, 0, 0)) {
+      (acc, choice) => {
+        var result = acc
+        result = if (choice.red > acc.red) result.copy(red = choice.red) else result
+        result = if (choice.green > acc.green) result.copy(green = choice.green) else result
+        result = if (choice.blue > acc.blue) result.copy(blue = choice.blue) else result
+        result
+      }
+    }
+  }
 }
 
 object Game {
@@ -50,6 +62,19 @@ object part1 extends App {
   val input = Source.fromResource("input/day2/input.txt")
 
   val result = input.getLines().to(LazyList).map(Game.serializeGame).filter(_.isValidGame).map(_.id).sum
+  println(result)
+
+}
+
+object part2 extends App {
+  val input = Source.fromResource("input/day2/input.txt")
+
+  val result = input.getLines().to(LazyList)
+    .map(Game.serializeGame)
+    .map(_.minimumGamePossible)
+    .map(choice => choice.red * choice.green * choice.blue)
+    .sum
+
   println(result)
 
 }
